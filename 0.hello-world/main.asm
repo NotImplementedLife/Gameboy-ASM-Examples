@@ -1,4 +1,7 @@
-INCLUDE "hardware.inc"
+; Source : https://eldred.fr/gb-asm-tutorial/hello-world.html
+; I'll use this as a good starting point for my further examples
+
+INCLUDE "../common/hardware.inc"
 
 SECTION "Header", ROM0[$100]
 
@@ -23,7 +26,6 @@ Start:
     ld [rLCDC],a 
 
     ; copy the font to VRAM
-
     ld hl, $9000
     ld de, FontTiles
     ld bc, FontTilesEnd - FontTiles
@@ -38,6 +40,8 @@ Start:
 
     ld hl, $9800 ; Print the string at the 0,0 position of the screen
     ld de, HellowWorldStr
+	
+	; print string to screen
 .copyString 
     ld a, [de]
     ld [hli],a
@@ -45,7 +49,7 @@ Start:
     and a ; check if the byte we copied is 0
     jr nz, .copyString ; Continue if it's not
 
-    ; Init dispaly registers
+    ; Init display registers
     ld a, %11100100
     ld [rBGP], a
     xor a ; ld a, 0
@@ -61,12 +65,12 @@ Start:
 
     ;Lock up
 .lockup
-    jr .lockup
+    jr .lockup ; while(1) { }
 
 SECTION "FONT", ROM0
 
 FontTiles:
-INCBIN "font.chr"
+INCBIN "../common/res/font.chr"
 FontTilesEnd:
 
 SECTION "Hello world string", ROM0
