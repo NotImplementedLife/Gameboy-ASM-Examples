@@ -113,4 +113,5 @@ FontTilesEnd:
 SECTION "The string", ROM0
 
 TheString:
-    db "This Blinking Text ", 0
+	; Simulate endline by filling the lines with hidden text
+    db "This Blinking Text [ INVISIBLE]  I LOVE SPAGHETTI", 0
