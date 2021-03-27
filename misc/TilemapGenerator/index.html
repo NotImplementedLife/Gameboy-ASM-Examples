@@ -1,0 +1,41 @@
+<html>
+	<head>		
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"/>
+		<link rel="stylesheet" href="style.css"/>		
+	</head>
+	<body>
+		<div class="MainContainer" id="Workspace">
+			<div style="position:absolute; top:0; left:0; width:49%">
+				<h3>Tilemap:</h3>
+				<div style="width:512; height:256; position:relative">
+					<canvas id="ctilemap" width="512" height="256" style="position:absolute; top:0; left:0; background:lightgray"></canvas>
+					<canvas id="ctmgrid" width="512" height="256" style="position:absolute; top:0; left:0;"></canvas>
+				</div>
+				<br/>
+				<button style="margin:10px" onclick="encode()">Encode</button>
+				<br/>
+				<textarea id="result" style="margin:10px; width:80%; height:100px"></textarea>
+			</div>
+			<div style="position:absolute; top:0; left:49%; width:49%">
+				<h3>Tile:</h3>		
+				<div style="width:256; height:256; position:relative">
+					<canvas id="ctile" width="256" height="256" style="position:absolute; top:0; left:0; background:lightgray"></canvas>
+					<canvas id="ctgrid" width="256" height="256" style="position:absolute; top:0; left:0;"></canvas>
+				</div>				
+				<h3>Palette:</h3>
+				<button class="paletteButton" id="pal0" onclick="pen=0;">0</button>
+				<button class="paletteButton" id="pal1" onclick="pen=1;">1</button>
+				<button class="paletteButton" id="pal2" onclick="pen=2">2</button>
+				<button class="paletteButton" id="pal3" onclick="pen=3">3</button>
+				<br/>
+				<hr/>
+				<input id="cmdBox" type="text" style="width:50%" placeholder="setPalette(0,1,2,3)"></input>
+			</div>			
+		</div>
+		<div class="MainContainer" id="MobileDeviceError" style="display:none">			
+			<b id="MobileDeviceErrorMessage">This page is intended for desktop browsers only.</b>			
+		</div>		
+		<script src="main.js"></script>
+	</body>
+</html>
