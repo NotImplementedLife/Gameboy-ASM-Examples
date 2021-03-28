@@ -23,15 +23,21 @@ loadMemory:
     or c
     jr nz, loadMemory
 	ret
-
+; drawDigit
+; arguments:
+; hl = screen top-left position
+; bc = memory tiles [ view Digits SECTION]
 drawDigit:	
+	ld d, 0
+	ld e, 0
+.renderDigit
 	ld a, [bc]
 	ld [hli], a
 	inc bc
 	inc d	
 	ld a, d               
 	cp a, $3 	
-	jp NZ, drawDigit
+	jr NZ, .renderDigit
 	inc e	
 	ld a, b
 	ld [$D004], a
@@ -44,10 +50,76 @@ drawDigit:
 	ld a, [$D005]
 	ld c, a
 	ld a, e
-	cp a, 5
-	ld d, 0
-	jp NZ, drawDigit
+	cp a, $5
+	ld d, $0
+	jr nz, .renderDigit
 	ret	
+	
+; draw all four digits
+; split the drawing method into two subtoutines, each to be executed in a separate vblank
+; This is due to the expensive drawing method
+update67__: ; draw [XX][:][  ]  	
+	ld d,0
+	ld e,0
+	ld b, $C0
+	ld a, [$D006]
+	ld c, a	
+	ld hl, $98E2			
+	call drawDigit
+	
+	ld b, $C0
+	ld a, [$D007]
+	ld c, a	
+	ld hl, $98E6			
+	call drawDigit	
+	
+	ret
+
+update__89:	; draw [  ][:][XX]
+	ld b, $C0
+	ld a, [$D008]
+	ld c, a	
+	ld hl, $98EB			
+	call drawDigit
+		
+	ld b, $C0
+	ld a, [$D009]
+	ld c, a	
+	ld hl, $98EF			
+	call drawDigit	
+	
+	ret
+
+; increments [bc] with $F. If digit out of range, set [bc] to 0 and increment [bc-1]
+; bc = $D006 .. $D009
+; simulates the clock incrementation (*:XX->*:XX+1 ; *:59->*.00)
+increment:
+	ld a, [bc]
+	add a, $F
+	ld d, a
+	ld a, c	
+	cp a, $08
+	ld a, d
+	jr z, .0x08
+	cp a, $96
+	jr z, .0x96
+	ld [bc],a 
+	ret
+.0x96
+	ld a, 0
+	ld [bc], a	
+	ld a, c	
+	cp a, $06
+	ret z
+	ld a, 4	
+	dec bc
+	jr increment	
+	ret	
+.0x08
+	cp a, $5A ; check if the 3rd digit is 6
+	jr z, .0x96
+	ld [bc],a
+	ret 
 
 Start:
     ; Turn off the LCD
@@ -79,80 +151,49 @@ Start:
 	ld a, [$D004]         ; Retrieve the a from 0xD004
 	
 	; Draw the ":" symbol
-	ld hl, $9908	; screen X=9, Y=8
+	ld hl, $9909	; screen X=9, Y=8
 	ld a, $87
 	ld [hli], a
 	inc a
 	ld [hli], a		
-	ld hl, $9948	; screen X=9, Y=10
+	ld hl, $9949	; screen X=9, Y=10
 	ld a, $87
 	ld [hli], a
 	inc a
-	ld [hli], a	
-		
-	ld hl, $98E1
-	ld bc, $C069
-	ld d, 0
-	ld e, 0
-	call drawDigit
+	ld [hli], a		
 	
-	ld hl, $98E5
-	ld bc, $C000
-	ld d, 0
-	ld e, 0
-	call drawDigit
-
-	ld hl, $98EA	
-	ld bc, $C03C
-	ld d, 0
-	ld e, 0
-	call drawDigit
+	ld a, $00
+	ld [$D006], a
+	ld [$D007], a
+	ld [$D008], a
+	ld [$D009], a		
 	
-	ld hl, $98EE
-	ld bc, $C087
-	ld d, 0
-	ld e, 0
-	call drawDigit
+	ld a, 0
+	ld [$D010], a
 	
+	call update67__
+	call update__89
 	
 	; main loop
 .loop
-	jr .draw
-    ld hl, $9800          ; Print the string at the 1,8 position of the screen
-	                      ; This will center the text on the screen
-    ld de, TheString
-	ld [$D004], a	      ; *(0xC004) = a  | backup
-	ld a, [$D005]         ; a = counter = *(0xC005)
-	and a, 63
-	cp a, 31              ; if (counter % 64 < 31) ...
-	ld a, [$C004]         ; a = *(0xC004)  | retrieve backup	
-	jp C, .hideString     ; ... then cover the string with spaces
-.copyString 
-    ld a, [de]
-    ld [hli],a
-    inc de
-    and a                 ; check if the byte we copied is 0
-    jr nz, .copyString    ; Continue if it's not	
+	ld a, [$D050]
+	cp a, 1
+	call z,update67__
+	ld a, 0
+	ld [$D050], a
 	
-	jr .draw	
-.hideString	              ; The same as .copyString, but for each character we print a space
-	ld a, [de]
-	ld [$C004], a	      ; We need to backup the character in order to check it with ```and a```
-	ld a, 255             ; replace char with space
-    ld [hli], a           ; write in VRAM
-	ld a, [$C004]         ; retrive backup
-    inc de                ; next character
-    and a                 ; check if the byte we copied is 0
-    jr nz, .hideString    ; Continue if it's not
-	
-.draw
-	ld [$D004], a         ; backup
-	ld a, [$D005]      
-	inc a                 ; counter ++
-	ld [$D005], a
-	ld a, [$D004]         ; retrieve backup
-	
-
+	ld a, [$D010]
+	and a, 127
+	cp a, 127
+	jr nz, .draw		
+	ld bc, $D009	
+	call increment				
+	call update__89
+	ld a, 1
+	ld [$D050], a
+.draw		
+	inc a
+	ld [$D010], a
     ; Init display registers
     ld a, %00011011
     ld [rBGP], a
@@ -163,7 +204,7 @@ Start:
     ; Turn screen on, display background
     ld a, %10000001
     ld [rLCDC], a	
-    
+.vblank
 	call waitForVBlank
 	
     jr .loop              ; while(1) 

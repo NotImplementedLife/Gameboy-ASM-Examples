@@ -1,6 +1,6 @@
 # Gameboy ASM Examples
 
-A collection of Gameboy projects I made while learning GBZ80 Assembly.
+A collection of Gameboy projects I made while learning GBz80 Assembly.
 
 The repository comes with scripts for building and running the ROMs. [RGBDS](https://github.com/gbdev/rgbds "RGBDS") will be required in the build process. Make sure it is found in your ```%PATH%```.
 
@@ -26,3 +26,5 @@ If there's no need to build the ROM, just ```run``` it:
 Launching...
 Done.
 </code></pre>
+
+There are precompiled ROMs in the [bin](bin/ "bin") folder.
