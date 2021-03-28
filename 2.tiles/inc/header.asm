@@ -50,7 +50,7 @@ SECTION "Nintendo Logo", ROM0[$104]
   NINTENDO_LOGO ; Defined in hardware.inc
 
 SECTION "Title", ROM0[$134]  
-  DB "CLOCK",0,0,0,0,0,0
+  DB "DIGIT CLOCK"
   
 SECTION "Product Code", ROM0[$13F]
   ; Leave blank.

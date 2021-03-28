@@ -1,6 +1,17 @@
 INCLUDE "../common/hardware.inc"
 INCLUDE "inc/header.asm"
 
+SECTION "Work Ram", WRAM0[$C500]
+
+backup::
+	ds 2
+digits::
+	ds 4
+drawingFlag:
+	ds 1
+counter:
+	ds 1
+
 SECTION "Main", ROM0
 
 waitForVBlank:
@@ -40,14 +51,14 @@ drawDigit:
 	jr NZ, .renderDigit
 	inc e	
 	ld a, b
-	ld [$D004], a
+	ld [backup+0], a
 	ld a, c
-	ld [$D005], a
+	ld [backup+1], a
 	ld bc, $1D
 	add hl, bc
-	ld a, [$D004]
+	ld a, [backup+0]
 	ld b, a
-	ld a, [$D005]
+	ld a, [backup+1]
 	ld c, a
 	ld a, e
 	cp a, $5
@@ -58,32 +69,32 @@ drawDigit:
 ; draw all four digits
 ; split the drawing method into two subtoutines, each to be executed in a separate vblank
 ; This is due to the expensive drawing method
-update67__: ; draw [XX][:][  ]  	
+update00__: ; draw [XX][:][  ]  	
 	ld d,0
 	ld e,0
 	ld b, $C0
-	ld a, [$D006]
+	ld a, [digits+0]
 	ld c, a	
 	ld hl, $98E2			
 	call drawDigit
 	
 	ld b, $C0
-	ld a, [$D007]
+	ld a, [digits+1]
 	ld c, a	
 	ld hl, $98E6			
 	call drawDigit	
 	
 	ret
 
-update__89:	; draw [  ][:][XX]
+update__00:	; draw [  ][:][XX]
 	ld b, $C0
-	ld a, [$D008]
+	ld a, [digits+2]
 	ld c, a	
 	ld hl, $98EB			
 	call drawDigit
 		
 	ld b, $C0
-	ld a, [$D009]
+	ld a, [digits+3]
 	ld c, a	
 	ld hl, $98EF			
 	call drawDigit	
@@ -91,16 +102,16 @@ update__89:	; draw [  ][:][XX]
 	ret
 
 ; increments [bc] with $F. If digit out of range, set [bc] to 0 and increment [bc-1]
-; bc = $D006 .. $D009
+; bc = digits+0 .. digits+3
 ; simulates the clock incrementation (*:XX->*:XX+1 ; *:59->*.00)
 increment:
 	ld a, [bc]
 	add a, $F
 	ld d, a
 	ld a, c	
-	cp a, $08
+	cp a, LOW(digits+2) 
 	ld a, d
-	jr z, .0x08
+	jr z, .digit3is6
 	cp a, $96
 	jr z, .0x96
 	ld [bc],a 
@@ -115,7 +126,7 @@ increment:
 	dec bc
 	jr increment	
 	ret	
-.0x08
+.digit3is6
 	cp a, $5A ; check if the 3rd digit is 6
 	jr z, .0x96
 	ld [bc],a
@@ -125,13 +136,7 @@ Start:
     ; Turn off the LCD
 	call waitForVBlank	
     xor a                 ; ld a,0 
-    ld [rLCDC], a 
-
-    ; copy the font to VRAM
-    ld hl, $9000
-    ld de, FontTiles
-    ld bc, FontTilesEnd - FontTiles
-	call loadMemory
+    ld [rLCDC], a   
 	
 	; copy digital tilemap to VRAM
 	ld hl, $8800
@@ -145,10 +150,10 @@ Start:
 	ld bc, DigitsEnd-Digits
 	call loadMemory
 		
-	ld [$D004], a         ; Copy a at the address 0xD004
+	ld [backup+0], a         ; Copy a at the address 0xD004
 	ld a, 0               
-	ld [$D005], a         ; Set value 0 at 0xD005
-	ld a, [$D004]         ; Retrieve the a from 0xD004
+	ld [backup+1], a         ; Set value 0 at 0xD005
+	ld a, [backup+0]         ; Retrieve the a from 0xD004
 	
 	; Draw the ":" symbol
 	ld hl, $9909	; screen X=9, Y=8
@@ -163,37 +168,37 @@ Start:
 	ld [hli], a		
 	
 	ld a, $00
-	ld [$D006], a
-	ld [$D007], a
-	ld [$D008], a
-	ld [$D009], a		
+	ld [digits+0], a
+	ld [digits+1], a
+	ld [digits+2], a
+	ld [digits+3], a		
 	
 	ld a, 0
-	ld [$D010], a
+	ld [counter], a
 	
-	call update67__
-	call update__89
+	call update00__
+	call update__00
 	
 	; main loop
 .loop
-	ld a, [$D050]
+	ld a, [drawingFlag]
 	cp a, 1
-	call z,update67__
+	call z,update00__
 	ld a, 0
-	ld [$D050], a
+	ld [drawingFlag], a
 	
-	ld a, [$D010]
+	ld a, [counter]
 	and a, 127
 	cp a, 127
 	jr nz, .draw		
-	ld bc, $D009	
+	ld bc, digits+3	
 	call increment				
-	call update__89
+	call update__00
 	ld a, 1
-	ld [$D050], a
+	ld [drawingFlag], a
 .draw		
 	inc a
-	ld [$D010], a
+	ld [counter], a
     ; Init display registers
     ld a, %00011011
     ld [rBGP], a
@@ -289,9 +294,3 @@ Digits:
 	DB $80, $81, $82, $90, $91, $92, $A0, $A1, $A2, $90, $91, $92, $B0, $B1, $B2 ; Digit 8 - $C078
 	DB $80, $81, $82, $90, $91, $92, $A4, $A1, $A2, $91, $91, $92, $B4, $B1, $B2 ; Digit 9 - $C087
 DigitsEnd:
-
-SECTION "The string", ROM0
-
-TheString:
-	; Simulate endline by filling the lines with hidden text
-    db "This Blinking Text", 0
