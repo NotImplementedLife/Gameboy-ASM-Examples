@@ -2,6 +2,8 @@ html, body {
 	padding:0;
 	margin:0;
 	overflow:hidden;	
+	font-family:Segoe;
+	font-size:18px;
 }
 
 div.MainContainer {
@@ -27,4 +29,12 @@ div.MainContainer {
 button.paletteButton {
 	width:30;
 	height:30;	
+}
+
+.unselectable {
+   -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
 }

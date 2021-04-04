@@ -228,3 +228,6 @@ function encode() {
 	}
 	document.getElementById("result").value=str;
 }
+
+// prevent zoom:
+document.body.addEventListener("wheel", e=>{if(e.ctrlKey) e.preventDefault();}, { passive: false});
