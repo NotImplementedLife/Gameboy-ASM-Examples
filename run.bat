@@ -5,7 +5,7 @@
 @echo off
 if NOT EXIST "%~1" goto __PATH_NOT_FOUND__
 echo Launching...
-bgb64 %1/%1.gb
+%1/%1.gb
 echo Done.
 
 goto __END__

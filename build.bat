@@ -7,7 +7,7 @@ if NOT EXIST "%~1" goto __PATH_NOT_FOUND__
 echo Building %1
 cd %1
 echo :: rgbasm -o main.o main.asm
-rgbasm -o main.o main.asm
+rgbasm -h -o main.o main.asm
 if %ERRORLEVEL% NEQ 0 goto __PATH_EXIT__
 
 :__LINK__
@@ -20,7 +20,7 @@ rgbfix -v -p 0 %1.gb
 echo Cleaning...
 del main.o
 echo Launching...
-bgb64 %1.gb
+%1.gb
 echo Done.
 goto __PATH_EXIT__
 
