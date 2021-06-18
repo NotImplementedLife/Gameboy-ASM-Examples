@@ -50,7 +50,6 @@ SECTION "Vblank VARS", HRAM
 hVBlankFlag:
 	DS 1
 
-...
 
 ; Initialize it before enabling vBlank interrupt:
     xor a
