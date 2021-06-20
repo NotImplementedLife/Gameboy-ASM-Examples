@@ -40,4 +40,5 @@ There are precompiled ROMs in the [bin](bin/ "bin") folder.
 
 Direct links:
 
-- [Tiileset Generator](https://notimplementedlife.github.io/Gameboy-ASM-Examples/misc/TilesetGenerator/index.html "Tileset Generator") - html tool to create Gameboy Tiles
+- [Tileset Generator](https://notimplementedlife.github.io/Gameboy-ASM-Examples/misc/TilesetGenerator/index.html "Tileset Generator") - html tool to create Gameboy Tiles
+- [Tilemap Creator](https://notimplementedlife.github.io/Gameboy-ASM-Examples/misc/TilemapCreator/index.html "Tilemap Creator") - html tool to create Gameboy Tilemaps
