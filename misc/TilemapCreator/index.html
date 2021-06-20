@@ -1,0 +1,51 @@
+<html>
+	<head>		
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<link rel="stylesheet" href="style.css"/>		
+		<link rel="icon" href="favicon.png"/>
+		<title>Gameboy Tilemap Creator</title>	
+	</head>
+	<body>
+		<div class="MainContainer unselectable" id="Workspace">
+			<div style="position:absolute; top:0; left:0; width:49%">
+				<h3 style="display:inline-block;">Tilesets:</h3>
+				<input id="r00" type="radio" name="ts" onclick="tiles=tiles00; renderAllTiles();" checked>$00-$7F</input>
+				<input id="r80" type="radio" name="ts" onclick="tiles=tiles80; renderAllTiles();">$80-$FF</input>
+				<div class="unselectable" style="width:512; height:256; position:relative">
+					<canvas id="ctileset" width="512" height="256" style="position:absolute; top:0; left:0; background:lightgray"></canvas>
+					<canvas id="ctsgrid" width="512" height="256" style="position:absolute; top:0; left:0;"></canvas>
+				</div>				
+				<textarea id="tsinp" style="margin:10px; width:90%; height:200px; resize:none; white-space:nowrap" placeholder="DB $00, $01, ..."></textarea>
+				<br/>
+				<button style="margin:5px; margin-right:70px; float:right" onclick="load(tiles80)">Load $80-$FF</button>	
+				<button style="margin:5px; float:right" onclick="load(tiles00)">Load $00-$7F</button>				
+				<br/>
+				<hr/>
+				<h3 style="display:inline-block;">Palette:</h3>
+				<input id="cmdBox" type="text" style="width:120px; margin-left:10px" placeholder="setPalette(0,1,2,3)"></input>				
+				<button class="paletteButton" id="pal0" disabled style="margin-left:10px">0</button>
+				<button class="paletteButton" id="pal1" disabled>1</button>
+				<button class="paletteButton" id="pal2" disabled>2</button>
+				<button class="paletteButton" id="pal3" disabled>3</button>								
+				<br/>								
+			</div>
+			<div class="unselectable" style="position:absolute; top:0; left:49%; width:49%">
+				<h3 style="display:inline-block">Tilemap:</h3><button id="dp" onclick="tmdmp()">dump</button><br/>
+				<div class="unselectable" style="width:256; height:256; position:relative">
+					<canvas id="ctile" width="256" height="256" style="position:absolute; top:0; left:0; background:lightgray" hidden></canvas>					
+					<canvas id="ctilemap" width="512" height="512" style="position:absolute; top:0; left:0; background:#E0F8FF;"></canvas>
+					<canvas id="ctmgrid" width="512" height="512" style="position:absolute; top:0; left:0;"></canvas>					
+				</div>														
+			</div>			
+		</div>
+		<div class="MainContainer" id="MobileDeviceError" style="display:none">			
+			<b id="MobileDeviceErrorMessage">This page is intended for desktop browsers only.</b>			
+		</div>		
+		<a style="position:fixed; top:10px; right:10px; z-index:100" href="https://github.com/NotImplementedLife/Gameboy-ASM-Examples" target="_blank">
+			<img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" style="width:32px"/>		
+		</a>
+		<span class="unselectable" style="position:fixed; bottom:10px; right:10px; z-index:100; font-size:12px; color:orange">Minimum resolution: 1000x700px</span>
+		<script src="main.js"></script>
+	</body>
+</html>
