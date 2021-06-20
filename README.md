@@ -38,7 +38,7 @@ There are precompiled ROMs in the [bin](bin/ "bin") folder.
 | 2   | [tiles](./2.tiles)                     | Learn using tilesets/tilemaps       |
 | 3   | [vblank-handler](./3.vblank-handler)   | Faster vBlank using `halt`          |
 
-Direct links:
+## Direct links:
 
 - [Tileset Generator](https://notimplementedlife.github.io/Gameboy-ASM-Examples/misc/TilesetGenerator/index.html "Tileset Generator") - html tool to create Gameboy Tiles
 - [Tilemap Creator](https://notimplementedlife.github.io/Gameboy-ASM-Examples/misc/TilemapCreator/index.html "Tilemap Creator") - html tool to create Gameboy Tilemaps
