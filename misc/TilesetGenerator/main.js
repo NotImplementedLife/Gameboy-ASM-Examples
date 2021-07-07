@@ -234,7 +234,7 @@ function getFont() {
 	for(var i=0;i<128;i++) {			
 		str+="DB ";
 		var tile=tiles[i];
-		for(var y=1;y<8;y+=2) {
+		for(var y=0;y<8;y++) {
 			var b0=0;
 			var b1=0;			
 			for(x=0;x<8;x++) {
@@ -243,7 +243,7 @@ function getFont() {
 				if(cl==1 || cl==3) b0++;
 				if(cl==2 || cl==3) b1++;				
 			}			
-			str+= "$"+b0.toString(16).padStart(2,'0')+", $"+b1.toString(16).padStart(2,'0');
+			str+= "$"+b0.toString(16).padStart(2,'0');
 			if(y==7) str+="\n";
 			else str+=", ";
 		}		
