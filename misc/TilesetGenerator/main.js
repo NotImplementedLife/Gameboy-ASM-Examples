@@ -229,6 +229,28 @@ function encode() {
 	document.getElementById("result").value=str;
 }
 
+function getFont() {
+	var str="";
+	for(var i=0;i<128;i++) {			
+		str+="DB ";
+		var tile=tiles[i];
+		for(var y=1;y<8;y+=2) {
+			var b0=0;
+			var b1=0;			
+			for(x=0;x<8;x++) {
+				b0*=2; b1*=2;
+				var cl=tile[8*y+x];
+				if(cl==1 || cl==3) b0++;
+				if(cl==2 || cl==3) b1++;				
+			}			
+			str+= "$"+b0.toString(16).padStart(2,'0')+", $"+b1.toString(16).padStart(2,'0');
+			if(y==7) str+="\n";
+			else str+=", ";
+		}		
+	}
+	document.getElementById("result").value=str;
+}
+
 function load() {
 	var k=0;
 	var str=document.getElementById("result").value;
