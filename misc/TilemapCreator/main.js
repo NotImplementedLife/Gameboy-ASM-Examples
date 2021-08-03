@@ -59,6 +59,40 @@ function tmdmp() {
 	document.getElementById("tsinp").value=str;
 }
 
+function tmld() {
+	var k=0;
+	var str=document.getElementById("tsinp").value;
+	var lines=str.match(/[^\r\n]+/g);
+	for(var y in lines) {		
+		var line=lines[y];
+		var nb=line.replace(/[^0-9a-f]/g, "");
+		if(nb.length!=64) continue;
+		console.log(nb);
+		for(var x=0;x<32;x++) {
+			var hx=nb[2*x]+nb[2*x+1]
+			tilemap[32*y+x]=parseInt(hx,16);
+		}	
+	}
+	refreshTileMap();
+}
+
+function refreshTileMap() {
+	for(var y=0;y<32;y++) {
+		for(var x=0;x<32;x++){
+			var tile=tilemap[32*y+x];
+			tiles=tiles00;
+			if(tile>=0x80) {
+				tile-=0x80;
+				tiles=tiles80;
+			}
+			selectedTileY=Math.floor(tile/16);
+			selectedTileX=tile%16;
+			drawSelTile(x,y);
+		}
+	}		
+	//drawSelTile
+}
+
 function $TMCPY(sx,sy,sw,sh,tx,ty) {
 	for(x=sx;x<sx+sw;x++) {
 		for(y=sy;y<sy+sh;y++) {
